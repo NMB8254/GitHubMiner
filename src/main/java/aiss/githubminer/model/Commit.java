@@ -1,77 +1,130 @@
 package aiss.githubminer.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
+import jakarta.validation.constraints.*;
 
 @Entity
-@Table(name = "commits")
+@Table(name = "Commit")
 public class Commit {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty("id")
     private String id;
-
-    @Column(name = "title")
+    @JsonProperty("title")
     private String title;
 
-    @Column(name = "message")
+    @JsonProperty("message")
+    @Column(columnDefinition="TEXT")
     private String message;
-
-    @Column(name = "authorName")
+    @JsonProperty("author_name")
+    @NotEmpty(message = "Author name cannot be empty.")
     private String authorName;
-
-    @Column(name = "authorEmail")
+    @JsonProperty("author_email")
     private String authorEmail;
+    @JsonProperty("authored_date")
+    @NotEmpty(message = "Author date cannot be empty.")
+    private String authoredDate;
 
-    @Column(name = "authoredDate")
-    private LocalDateTime authoredDate;
-
-    @Column(name = "webUrl")
+    @JsonProperty("web_url")
+    @NotEmpty(message = "URL cannot be empty." +
+            "")
     private String webUrl;
 
-
-    public Commit() {
-
+    public String getId() {
+        return id;
     }
 
-    public Commit(String title, String message, String authorName, String authorEmail, LocalDateTime authoredDate, String webUrl) {
-        setTitle(title);
-        setMessage(message);
-        setAuthorName(authorName);
-        setAuthorEmail(authorEmail);
-        setAuthoredDate(authoredDate);
-        setWebUrl(webUrl);
+    public void setId(String id) {
+        this.id = id;
     }
 
+    public String getTitle() {
+        return title;
+    }
 
-    public String getId() { return id; }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-    public void setId(String id) { this.id = id; }
+    public String getMessage() {
+        return message;
+    }
 
-    public String getTitle() { return title; }
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
-    public void setTitle(String title) { this.title = title; }
+    public String getAuthorName() {
+        return authorName;
+    }
 
-    public String getMessage() { return message; }
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
+    }
 
-    public void setMessage(String message) { this.message = message; }
+    public String getAuthorEmail() {
+        return authorEmail;
+    }
 
-    public String getAuthorName() { return authorName; }
+    public void setAuthorEmail(String authorEmail) {
+        this.authorEmail = authorEmail;
+    }
 
-    public void setAuthorName(String authorName) { this.authorName = authorName; }
+    public String getAuthoredDate() {
+        return authoredDate;
+    }
 
-    public String getAuthorEmail() { return authorEmail; }
+    public void setAuthoredDate(String authoredDate) {
+        this.authoredDate = authoredDate;
+    }
 
-    public void setAuthorEmail(String authorEmail) { this.authorEmail = authorEmail; }
+    public String getWebUrl() {
+        return webUrl;
+    }
 
-    public LocalDateTime getAuthoredDate() { return authoredDate; }
+    public void setWebUrl(String webUrl) {
+        this.webUrl = webUrl;
+    }
 
-    public void setAuthoredDate(LocalDateTime authoredDate) { this.authoredDate = authoredDate; }
-
-    public String getWebUrl() { return webUrl; }
-
-    public void setWebUrl(String webUrl) { this.webUrl = webUrl; }
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(Commit.class.getName()).append('@').append(Integer.toHexString(System.identityHashCode(this))).append('[');
+        sb.append("id");
+        sb.append('=');
+        sb.append(((this.id == null) ? "<null>" : this.id));
+        sb.append(',');
+        sb.append("title");
+        sb.append('=');
+        sb.append(((this.title == null) ? "<null>" : this.title));
+        sb.append(',');
+        sb.append("message");
+        sb.append('=');
+        sb.append(((this.message == null) ? "<null>" : this.message));
+        sb.append(',');
+        sb.append("authorName");
+        sb.append('=');
+        sb.append(((this.authorName == null) ? "<null>" : this.authorName));
+        sb.append(',');
+        sb.append("authorEmail");
+        sb.append('=');
+        sb.append(((this.authorEmail == null) ? "<null>" : this.authorEmail));
+        sb.append(',');
+        sb.append("authoredDate");
+        sb.append('=');
+        sb.append(((this.authoredDate == null) ? "<null>" : this.authoredDate));
+        sb.append(',');
+        sb.append("webUrl");
+        sb.append('=');
+        sb.append(((this.webUrl == null) ? "<null>" : this.webUrl));
+        sb.append(',');
+        if (sb.charAt((sb.length() - 1)) == ',') {
+            sb.setCharAt((sb.length() - 1), ']');
+        } else {
+            sb.append(']');
+        }
+        return sb.toString();
+    }
 }
