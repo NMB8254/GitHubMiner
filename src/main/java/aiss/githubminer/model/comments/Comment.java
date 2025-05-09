@@ -1,6 +1,7 @@
 
-package aiss.githubminer.model;
+package aiss.githubminer.model.comments;
 
+import aiss.githubminer.model.User;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 

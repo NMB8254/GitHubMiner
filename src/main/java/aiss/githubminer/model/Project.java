@@ -1,6 +1,8 @@
 
 package aiss.githubminer.model;
 
+import aiss.githubminer.model.commits.Commit;
+import aiss.githubminer.model.issues.Issue;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
