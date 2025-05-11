@@ -35,11 +35,9 @@ public class IssueService {
                 issue.setUpdatedAt(mi.getUpdatedAt());
                 issue.setClosedAt(mi.getClosedAt());
 
-                List<String> labels = null;
+                List<Label> labels = null;
                 if (mi.getLabels() != null) {
-                    labels = mi.getLabels().stream()
-                            .map(Label::getName)
-                            .toList();
+                    labels = mi.getLabels().stream().toList();
                 }
                 issue.setLabels(labels);
 
