@@ -2,6 +2,7 @@
 package aiss.githubminer.model.issues;
 
 import aiss.githubminer.model.User;
+import aiss.githubminer.model.issues.Label;
 import aiss.githubminer.model.comments.Comment;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -9,10 +10,11 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "Issue")
+@Table(name = "issues")
 public class Issue {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty("id")
     private String id;
     @JsonProperty("title")
@@ -29,9 +31,10 @@ public class Issue {
     private String updatedAt;
     @JsonProperty("closed_at")
     private String closedAt;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name="issueId")
     @JsonProperty("labels")
-    @ElementCollection
-    private List<String> labels;
+    private List<Label> labels;
     @JsonProperty("author")
     //@NotEmpty(message = "The author of the issue cannot be empty")
     @JoinColumn(name = "author_id",referencedColumnName = "id")
@@ -104,11 +107,11 @@ public class Issue {
         this.closedAt = closedAt;
     }
 
-    public List<String> getLabels() {
+    public List<Label> getLabels() {
         return labels;
     }
 
-    public void setLabels(List<String> labels) {
+    public void setLabels(List<Label> labels) {
         this.labels = labels;
     }
 
