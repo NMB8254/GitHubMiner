@@ -2,6 +2,7 @@ package aiss.githubminer.service;
 
 import aiss.githubminer.model.commits.Commit;
 import aiss.githubminer.model.commits.MapCommit;
+import aiss.githubminer.model.projects.Project;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -9,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CommitService {
@@ -38,5 +40,19 @@ public class CommitService {
         }
 
         return Collections.emptyList();
+    }
+
+    public Commit getCommitById(String sha, String repo, String owner) {
+        String uri = "https://api.github.com/repos/" + owner + "/" + repo + "/commits";
+
+        if (getAllCommits(repo, owner) != null) {
+            Optional<Commit> commitOpt = getAllCommits(repo, owner)
+                    .stream()
+                    .filter(commit -> commit.getId().equals(sha))
+                    .findFirst();
+            return commitOpt.orElse(null); // Devuelve null si no se encuentra
+        }
+
+        return null;
     }
 }

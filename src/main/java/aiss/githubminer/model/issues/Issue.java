@@ -14,7 +14,6 @@ import java.util.List;
 public class Issue {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty("id")
     private String id;
     @JsonProperty("title")
@@ -46,10 +45,6 @@ public class Issue {
     private User assignee;
     @JsonProperty("votes")
     private Integer votes;
-    @JsonProperty("comments")
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "issueId")
-    private List<Comment> comments;
 
     public String getId() {
         return id;
@@ -139,14 +134,6 @@ public class Issue {
         this.votes = votes;
     }
 
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -194,10 +181,6 @@ public class Issue {
         sb.append("votes");
         sb.append('=');
         sb.append(((this.votes == null) ? "<null>" : this.votes));
-        sb.append(',');
-        sb.append("comments");
-        sb.append('=');
-        sb.append(((this.comments == null) ? "<null>" : this.comments));
         sb.append(',');
 
         if (sb.charAt((sb.length() - 1)) == ',') {

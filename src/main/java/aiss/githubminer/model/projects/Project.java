@@ -1,5 +1,5 @@
 
-package aiss.githubminer.model;
+package aiss.githubminer.model.projects;
 
 import aiss.githubminer.model.commits.Commit;
 import aiss.githubminer.model.issues.Issue;

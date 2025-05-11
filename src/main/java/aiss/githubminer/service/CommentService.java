@@ -4,6 +4,7 @@ import aiss.githubminer.model.User;
 import aiss.githubminer.model.comments.Comment;
 import aiss.githubminer.model.comments.MapComment;
 import aiss.githubminer.model.comments.MapUserComment;
+import aiss.githubminer.model.projects.Project;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -11,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CommentService {
@@ -38,7 +40,7 @@ public class CommentService {
                     user.setUsername(mapUser.getLogin());
                     user.setAvatarUrl(mapUser.getAvatarUrl());
                     user.setWebUrl(mapUser.getHtmlUrl());
-                    user.setName(null);  // aqui no se lo que poner porque en e mensaje de la api de github no hay ningun campo en el que venga el nomrbe
+                    user.setName(null);
                     comment.setAuthor(user);
                 }
 
@@ -48,5 +50,19 @@ public class CommentService {
         }
 
         return Collections.emptyList();
+    }
+
+    public Comment getCommentFromIssueById(String id, String repo, String owner) {
+        String uri = "https://api.github.com/repos/" + owner + "/" + repo + "/issues/comments";
+
+        if (getAllCommentsFromIssue(repo, owner) != null) {
+            Optional<Comment> commentOpt = getAllCommentsFromIssue(repo, owner)
+                    .stream()
+                    .filter(comment -> comment.getId().equals(id))
+                    .findFirst();
+            return commentOpt.orElse(null); // Devuelve null si no se encuentra
+        }
+
+        return null;
     }
 }
