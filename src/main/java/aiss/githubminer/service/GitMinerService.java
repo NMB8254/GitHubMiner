@@ -14,7 +14,7 @@ public class GitMinerService {
     @Autowired
     RestTemplate restTemplate;
 
-    private static final String BASE_URL = "https://localhost:8081/gitminer";
+    private static final String BASE_URL = "https://localhost:8080/gitminer";
 
     public void sendDataToGitMiner(List<Commit> commits, List<Issue> issues) {
         restTemplate.postForObject(BASE_URL + "/commits", commits, Void.class);

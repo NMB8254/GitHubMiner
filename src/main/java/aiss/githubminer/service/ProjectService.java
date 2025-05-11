@@ -1,0 +1,82 @@
+package aiss.githubminer.service;
+
+import aiss.githubminer.model.commits.Commit;
+import aiss.githubminer.model.commits.MapCommit;
+import aiss.githubminer.model.issues.Issue;
+import aiss.githubminer.model.issues.Label;
+import aiss.githubminer.model.issues.MapIssue;
+import aiss.githubminer.model.projects.MapProject;
+import aiss.githubminer.model.projects.Project;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class ProjectService {
+
+    @Autowired
+    RestTemplate restTemplate;
+    @Autowired
+    CommitService commitService;
+    @Autowired
+    IssueService issueService;
+
+    public List<Project> getAllProjects(String repo, String owner) {
+        List<Project> projects = new ArrayList<>();
+        String uri = "https://api.github.com/repos/" + owner + "/" + repo + "/projects";
+        MapProject[] mapProjects = restTemplate.getForObject(uri, MapProject[].class);
+
+        if (mapProjects != null) {
+            for (MapProject mp : mapProjects) {
+                Project project = new Project();
+                project.setId(String.valueOf(mp.getId()));
+                project.setName(mp.getName());
+                project.setWebUrl(mp.getHtmlUrl());
+                project.setCommits(commitService.getAllCommits(repo, owner));
+                project.setIssues(issueService.getAllIssues(repo, owner));
+
+                projects.add(project);
+            }
+            return projects;
+        }
+
+        return Collections.emptyList();
+    }
+
+    public Project createProject(Project projectInput) {
+        Project project = new Project();
+        project.setId(projectInput.getId());
+        project.setName(projectInput.getName());
+        project.setWebUrl(projectInput.getWebUrl());
+
+        if (projectInput.getCommits() != null) {
+            project.setCommits(new ArrayList<>(projectInput.getCommits()));
+        }
+
+        if (projectInput.getIssues() != null) {
+            project.setIssues(new ArrayList<>(projectInput.getIssues()));
+        }
+
+        return project;
+    }
+
+    public Project getProjectById(String id, String repo, String owner) {
+        String uri = "https://api.github.com/repos/" + owner + "/" + repo + "/projects";
+
+        if (getAllProjects(repo, owner) != null) {
+            Optional<Project> projectOpt = getAllProjects(repo, owner)
+                    .stream()
+                    .filter(project -> project.getId().equals(id))
+                    .findFirst();
+            return projectOpt.orElse(null); // Devuelve null si no se encuentra
+        }
+
+        return null;
+    }
+
+}
