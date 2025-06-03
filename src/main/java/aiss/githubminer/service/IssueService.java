@@ -21,7 +21,7 @@ public class IssueService {
     @Autowired
     RestTemplate restTemplate;
 
-    public List<Issue> getAllIssues(String repo, String owner) {
+    public List<Issue> getAllIssues(String owner, String repo) {
         List<Issue> issues = new ArrayList<>();
         String uri = "https://api.github.com/repos/" + owner + "/" + repo + "/issues";
         MapIssue[] mapIssues = restTemplate.getForObject(uri, MapIssue[].class);
@@ -37,10 +37,7 @@ public class IssueService {
                 issue.setUpdatedAt(mi.getUpdatedAt());
                 issue.setClosedAt(mi.getClosedAt());
 
-                List<Label> labels = null;
-                if (mi.getLabels() != null) {
-                    labels = mi.getLabels().stream().toList();
-                }
+                List<String> labels = mi.getLabels().stream().map(Label::getName).toList();
                 issue.setLabels(labels);
 
                 issue.setVotes(mi.getComments());

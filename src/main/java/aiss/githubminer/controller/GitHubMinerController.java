@@ -2,8 +2,10 @@ package aiss.githubminer.controller;
 
 import aiss.githubminer.model.commits.Commit;
 import aiss.githubminer.model.issues.Issue;
+import aiss.githubminer.service.CommitService;
 import aiss.githubminer.service.GitHubService;
 import aiss.githubminer.service.GitMinerService;
+import aiss.githubminer.service.IssueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +22,12 @@ public class GitHubMinerController {
     private GitHubService gitHubService;
 
     @Autowired
+    private CommitService commitService;
+
+    @Autowired
+    private IssueService issueService;
+
+    @Autowired
     private GitMinerService gitMinerService;
 
     @PostMapping("/{owner}/{repoName}")
@@ -30,8 +38,8 @@ public class GitHubMinerController {
             @RequestParam(defaultValue = "20") int sinceIssues,
             @RequestParam(defaultValue = "2") int maxPages) {
 
-        List<Commit> commits = gitHubService.getCommits(owner, repoName, sinceCommits, maxPages);
-        List<Issue> issues = gitHubService.getIssues(owner, repoName, sinceIssues, maxPages);
+        List<Commit> commits = commitService.getAllCommits(owner, repoName);
+        List<Issue> issues = issueService.getAllIssues(owner, repoName);
 
         gitMinerService.sendDataToGitMiner(commits, issues);
 
@@ -47,8 +55,8 @@ public class GitHubMinerController {
             @RequestParam(defaultValue = "2") int maxPages) {
 
         Map<String, Object> preview = new HashMap<>();
-        preview.put("commits", gitHubService.getCommits(owner, repoName, sinceCommits, maxPages));
-        preview.put("issues", gitHubService.getIssues(owner, repoName, sinceIssues, maxPages));
+        preview.put("commits", commitService.getAllCommits(owner, repoName));
+        preview.put("issues", issueService.getAllIssues(owner, repoName));
         return preview;
     }
 

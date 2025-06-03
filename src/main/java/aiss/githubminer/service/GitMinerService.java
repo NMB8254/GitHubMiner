@@ -14,10 +14,14 @@ public class GitMinerService {
     @Autowired
     RestTemplate restTemplate;
 
-    private static final String BASE_URL = "https://localhost:8080/gitminer";
+    private static final String BASE_URL = "http://localhost:8080/gitminer";
 
     public void sendDataToGitMiner(List<Commit> commits, List<Issue> issues) {
-        restTemplate.postForObject(BASE_URL + "/commits", commits, Void.class);
-        restTemplate.postForObject(BASE_URL + "/issues", issues, Void.class);
+        for (Commit commit : commits) {
+            restTemplate.postForObject(BASE_URL + "/commits", commit, Void.class);
+        }
+        for (Issue issue : issues) {
+            restTemplate.postForObject(BASE_URL + "/issues", issue, Void.class);
+        }
     }
 }

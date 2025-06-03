@@ -10,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -18,41 +19,26 @@ public class GitHubService {
    @Autowired
    RestTemplate restTemplate;
 
-   private static final String BASE_URL = "https://api.github.com";
+   private static final String BASE_URL = "https://api.github.com/repos/";
 
-   public List<Commit> getCommits(String owner, String repo, int sinceCommits, int maxPages) {
-      List<Commit> allCommits = new ArrayList<>();
-      String since = LocalDate.now().minusDays(sinceCommits).toString();
-
-      for (int page = 1; page <= maxPages; page++) {
-         String url = BASE_URL + "/repos/" + owner + "/" + repo + "/commits"
-                 + "?since=" + since + "T00:00:00Z&page=" + page;
-         ResponseEntity<Commit[]> response = restTemplate.getForEntity(url, Commit[].class);
-         Commit[] commits = response.getBody();
-
-         if (commits == null || commits.length == 0) break;
-
-         allCommits.addAll(Arrays.asList(commits));
+   public List<Commit> getCommits(String owner, String repo) {
+      String uri = BASE_URL + owner + "/" + repo + "/commits";
+      Commit[] commits = restTemplate.getForObject(uri, Commit[].class);
+      if (commits != null) {
+         return Arrays.stream(commits).toList();
       }
-      return allCommits;
+      return Collections.emptyList();
    }
 
-   public List<Issue> getIssues(String owner, String repo, int sinceIssues, int maxPages) {
-      List<Issue> allIssues = new ArrayList<>();
-      String since = LocalDate.now().minusDays(sinceIssues).toString();
-
-      for (int page = 1; page <= maxPages; page++) {
-         String url = BASE_URL + "/repos/" + owner + "/" + repo + "/issues"
-                 + "?since=" + since + "T00:00:00Z&page=" + page;
-         ResponseEntity<Issue[]> response = restTemplate.getForEntity(url, Issue[].class);
-         Issue[] issues = response.getBody();
-
-         if (issues == null || issues.length == 0) break;
-
-         allIssues.addAll(Arrays.asList(issues));
+   public List<Issue> getIssues(String owner, String repo) {
+      String uri = BASE_URL + owner + "/" + repo + "/issues";
+      Issue[] issues = restTemplate.getForObject(uri, Issue[].class);
+      if (issues != null) {
+         return Arrays.stream(issues).toList();
       }
-      return allIssues;
+      return Collections.emptyList();
    }
+
 
 
 }

@@ -18,7 +18,7 @@ public class CommitService {
     @Autowired
     RestTemplate restTemplate;
 
-    public List<Commit> getAllCommits(String repo, String owner) {
+    public List<Commit> getAllCommits(String owner, String repo) {
         List<Commit> commits = new ArrayList<>();
         String uri = "https://api.github.com/repos/" + owner + "/" + repo + "/commits";
         MapCommit[] mapCommits = restTemplate.getForObject(uri, MapCommit[].class);
@@ -42,7 +42,7 @@ public class CommitService {
         return Collections.emptyList();
     }
 
-    public Commit getCommitById(String sha, String repo, String owner) {
+    public Commit getCommitById(String sha, String owner, String repo) {
         String uri = "https://api.github.com/repos/" + owner + "/" + repo + "/commits";
 
         if (getAllCommits(repo, owner) != null) {

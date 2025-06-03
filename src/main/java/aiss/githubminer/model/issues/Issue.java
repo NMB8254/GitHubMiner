@@ -2,24 +2,20 @@
 package aiss.githubminer.model.issues;
 
 import aiss.githubminer.model.User;
-import aiss.githubminer.model.issues.Label;
-import aiss.githubminer.model.comments.Comment;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.util.List;
 
-@Entity
-@Table(name = "issues")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Issue {
 
-    @Id
     @JsonProperty("id")
     private String id;
     @JsonProperty("title")
     private String title;
     @JsonProperty("description")
-    @Column(columnDefinition="TEXT")
     private String description;
     @JsonProperty("state")
     private String state;
@@ -30,18 +26,11 @@ public class Issue {
     private String updatedAt;
     @JsonProperty("closed_at")
     private String closedAt;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(name="issueId")
     @JsonProperty("labels")
-    private List<Label> labels;
+    private List<String> labels;
     @JsonProperty("author")
-    //@NotEmpty(message = "The author of the issue cannot be empty")
-    @JoinColumn(name = "author_id",referencedColumnName = "id")
-    @OneToOne(cascade=CascadeType.ALL)
     private User author;
     @JsonProperty("assignee")
-    @JoinColumn(name = "assignee_id",referencedColumnName = "id")
-    @OneToOne(cascade=CascadeType.ALL)
     private User assignee;
     @JsonProperty("votes")
     private Integer votes;
@@ -102,11 +91,11 @@ public class Issue {
         this.closedAt = closedAt;
     }
 
-    public List<Label> getLabels() {
+    public List<String> getLabels() {
         return labels;
     }
 
-    public void setLabels(List<Label> labels) {
+    public void setLabels(List<String> labels) {
         this.labels = labels;
     }
 
@@ -126,13 +115,9 @@ public class Issue {
         this.assignee = assignee;
     }
 
-    public Integer getVotes() {
-        return votes;
-    }
+    public Integer getVotes() { return votes; }
 
-    public void setVotes(Integer votes) {
-        this.votes = votes;
-    }
+    public void setVotes(Integer votes) { this.votes = votes; }
 
     @Override
     public String toString() {

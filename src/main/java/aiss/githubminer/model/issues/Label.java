@@ -3,18 +3,14 @@ package aiss.githubminer.model.issues;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Entity
-@Table(name="labels")
 public class Label {
 
     @Id
     @JsonProperty("id")
-    private Integer id;
+    private String id;
     @JsonProperty("node_id")
     private String nodeId;
     @JsonProperty("url")
@@ -29,12 +25,12 @@ public class Label {
     private Boolean _default;
 
     @JsonProperty("id")
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
     @JsonProperty("id")
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

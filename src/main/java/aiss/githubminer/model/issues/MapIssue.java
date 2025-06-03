@@ -10,7 +10,7 @@ import java.util.List;
 public class MapIssue {
 
     @JsonProperty("id")
-    private Integer id;
+    private String id;
     @JsonProperty("node_id")
     private String nodeId;
     @JsonProperty("url")
@@ -65,12 +65,12 @@ public class MapIssue {
     private String stateReason;
 
     @JsonProperty("id")
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
     @JsonProperty("id")
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
