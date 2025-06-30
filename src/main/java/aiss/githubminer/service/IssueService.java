@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,40 +23,44 @@ public class IssueService {
     @Autowired
     RestTemplate restTemplate;
 
-    public List<Issue> getAllIssues(String owner, String repo) {
+    public List<Issue> getAllIssues(String owner, String repo, int sinceIssues, int maxPages) {
         List<Issue> issues = new ArrayList<>();
-        String uri = "https://api.github.com/repos/" + owner + "/" + repo + "/issues";
-        MapIssue[] mapIssues = restTemplate.getForObject(uri, MapIssue[].class);
+        String baseUrl = "https://api.github.com/repos/" + owner + "/" + repo + "/issues";
+        LocalDateTime sinceDateTime = LocalDateTime.now().minusDays(sinceIssues);
+        String sinceIso = sinceDateTime.format(DateTimeFormatter.ISO_DATE_TIME);
 
-        if (mapIssues != null) {
-            for (MapIssue mi : mapIssues) {
-                Issue issue = new Issue();
-                issue.setId(String.valueOf(mi.getId()));
-                issue.setTitle(mi.getTitle());
-                issue.setDescription(mi.getBody());
-                issue.setState(mi.getState());
-                issue.setCreatedAt(mi.getCreatedAt());
-                issue.setUpdatedAt(mi.getUpdatedAt());
-                issue.setClosedAt(mi.getClosedAt());
+        for (int page = 1; page <= maxPages; page++) {
+            String uri = baseUrl + "?since=" + sinceIso + "&page=" + page + "&per_page=100";
+            MapIssue[] mapIssues = restTemplate.getForObject(uri, MapIssue[].class);
+            if (mapIssues != null) {
+                for (MapIssue mi : mapIssues) {
+                    Issue issue = new Issue();
+                    issue.setId(String.valueOf(mi.getId()));
+                    issue.setTitle(mi.getTitle());
+                    issue.setDescription(mi.getBody());
+                    issue.setState(mi.getState());
+                    issue.setCreatedAt(mi.getCreatedAt());
+                    issue.setUpdatedAt(mi.getUpdatedAt());
+                    issue.setClosedAt(mi.getClosedAt());
 
-                List<String> labels = mi.getLabels().stream().map(Label::getName).toList();
-                issue.setLabels(labels);
+                    List<String> labels = mi.getLabels().stream().map(Label::getName).toList();
+                    issue.setLabels(labels);
 
-                issue.setVotes(mi.getComments());
+                    issue.setVotes(mi.getComments());
 
-                issues.add(issue);
+                    issues.add(issue);
+                }
+                return issues;
             }
-            return issues;
         }
-
         return Collections.emptyList();
     }
 
-    public Issue getIssueById(String id, String repo, String owner) {
+    public Issue getIssueById(String id, String repo, String owner, int sinceIssues, int maxPages) {
         String uri = "https://api.github.com/repos/" + owner + "/" + repo + "/issues";
 
-        if (getAllIssues(repo, owner) != null) {
-            Optional<Issue> issueOpt = getAllIssues(repo, owner)
+        if (getAllIssues(repo, owner, sinceIssues, maxPages) != null) {
+            Optional<Issue> issueOpt = getAllIssues(repo, owner, sinceIssues, maxPages)
                     .stream()
                     .filter(issue -> issue.getId().equals(id))
                     .findFirst();
@@ -64,8 +70,8 @@ public class IssueService {
         return null;
     }
 
-    public List<Issue> getIssuesByAuthorId(String authorId, String repo, String owner) {
-        List<Issue> allIssues = getAllIssues(repo, owner);
+    public List<Issue> getIssuesByAuthorId(String authorId, String repo, String owner, int sinceIssues, int maxPages) {
+        List<Issue> allIssues = getAllIssues(repo, owner, sinceIssues, maxPages);
         if (allIssues == null || allIssues.isEmpty()) {
             return Collections.emptyList();
         }
@@ -76,8 +82,8 @@ public class IssueService {
 
     }
 
-    public List<Issue> getIssuesByState(String state, String repo, String owner) {
-        List<Issue> allIssues = getAllIssues(repo, owner);
+    public List<Issue> getIssuesByState(String state, String repo, String owner, int sinceIssues, int maxPages) {
+        List<Issue> allIssues = getAllIssues(repo, owner, sinceIssues, maxPages);
         if (allIssues == null || allIssues.isEmpty()) {
             return Collections.emptyList();
         }

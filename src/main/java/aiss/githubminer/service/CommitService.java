@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,35 +20,39 @@ public class CommitService {
     @Autowired
     RestTemplate restTemplate;
 
-    public List<Commit> getAllCommits(String owner, String repo) {
+    public List<Commit> getAllCommits(String owner, String repo, int sinceCommits, int maxPages) {
         List<Commit> commits = new ArrayList<>();
-        String uri = "https://api.github.com/repos/" + owner + "/" + repo + "/commits";
-        MapCommit[] mapCommits = restTemplate.getForObject(uri, MapCommit[].class);
+        String baseUrl = "https://api.github.com/repos/" + owner + "/" + repo + "/commits";
+        LocalDateTime sinceDateTime = LocalDateTime.now().minusDays(sinceCommits);
+        String sinceIso = sinceDateTime.format(DateTimeFormatter.ISO_DATE_TIME);
 
-        if (mapCommits != null) {
-            for (MapCommit mc : mapCommits) {
-                Commit commit = new Commit();
-                commit.setId(mc.getSha());
-                commit.setTitle(null); // aqui no se que poner porque no viene ningun atributo llamado tittle
-                commit.setMessage(mc.getCommit().getMessage());
-                commit.setAuthorName(mc.getCommit().getAuthor().getName());
-                commit.setAuthorEmail(mc.getCommit().getAuthor().getEmail());
-                commit.setAuthoredDate(mc.getCommit().getAuthor().getDate());
-                commit.setWebUrl(mc.getUrl());
+        for (int page = 1; page <= maxPages; page++) {
+            String uri = baseUrl + "?since=" + sinceIso + "&page=" + page + "&per_page=100";
+            MapCommit[] mapCommits = restTemplate.getForObject(uri, MapCommit[].class);
+            if (mapCommits != null) {
+                for (MapCommit mc : mapCommits) {
+                    Commit commit = new Commit();
+                    commit.setId(mc.getSha());
+                    commit.setTitle(null); // aqui no se que poner porque no viene ningun atributo llamado tittle
+                    commit.setMessage(mc.getCommit().getMessage());
+                    commit.setAuthorName(mc.getCommit().getAuthor().getName());
+                    commit.setAuthorEmail(mc.getCommit().getAuthor().getEmail());
+                    commit.setAuthoredDate(mc.getCommit().getAuthor().getDate());
+                    commit.setWebUrl(mc.getUrl());
 
-                commits.add(commit);
+                    commits.add(commit);
+                }
+                return commits;
             }
-            return commits;
         }
-
         return Collections.emptyList();
     }
 
-    public Commit getCommitById(String sha, String owner, String repo) {
+    public Commit getCommitById(String sha, String owner, String repo, int sinceCommits, int maxPages) {
         String uri = "https://api.github.com/repos/" + owner + "/" + repo + "/commits";
 
-        if (getAllCommits(repo, owner) != null) {
-            Optional<Commit> commitOpt = getAllCommits(repo, owner)
+        if (getAllCommits(repo, owner, sinceCommits, maxPages) != null) {
+            Optional<Commit> commitOpt = getAllCommits(repo, owner, sinceCommits, maxPages)
                     .stream()
                     .filter(commit -> commit.getId().equals(sha))
                     .findFirst();

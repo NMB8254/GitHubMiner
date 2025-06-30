@@ -38,8 +38,8 @@ public class GitHubMinerController {
             @RequestParam(defaultValue = "20") int sinceIssues,
             @RequestParam(defaultValue = "2") int maxPages) {
 
-        List<Commit> commits = commitService.getAllCommits(owner, repoName);
-        List<Issue> issues = issueService.getAllIssues(owner, repoName);
+        List<Commit> commits = commitService.getAllCommits(owner, repoName, sinceCommits, maxPages);
+        List<Issue> issues = issueService.getAllIssues(owner, repoName, sinceIssues, maxPages);
 
         gitMinerService.sendDataToGitMiner(commits, issues);
 
@@ -55,8 +55,8 @@ public class GitHubMinerController {
             @RequestParam(defaultValue = "2") int maxPages) {
 
         Map<String, Object> preview = new HashMap<>();
-        preview.put("commits", commitService.getAllCommits(owner, repoName));
-        preview.put("issues", issueService.getAllIssues(owner, repoName));
+        preview.put("commits", commitService.getAllCommits(owner, repoName, sinceCommits, maxPages));
+        preview.put("issues", issueService.getAllIssues(owner, repoName, sinceIssues, maxPages));
         return preview;
     }
 

@@ -26,7 +26,7 @@ public class ProjectService {
     @Autowired
     IssueService issueService;
 
-    public List<Project> getAllProjects(String repo, String owner) {
+    public List<Project> getAllProjects(String repo, String owner, int sinceCommits, int sinceIssues, int maxPages) {
         List<Project> projects = new ArrayList<>();
         String uri = "https://api.github.com/repos/" + owner + "/" + repo + "/projects";
         MapProject[] mapProjects = restTemplate.getForObject(uri, MapProject[].class);
@@ -37,8 +37,8 @@ public class ProjectService {
                 project.setId(String.valueOf(mp.getId()));
                 project.setName(mp.getName());
                 project.setWebUrl(mp.getHtmlUrl());
-                project.setCommits(commitService.getAllCommits(repo, owner));
-                project.setIssues(issueService.getAllIssues(repo, owner));
+                project.setCommits(commitService.getAllCommits(repo, owner, sinceCommits, maxPages));
+                project.setIssues(issueService.getAllIssues(repo, owner, sinceIssues, maxPages));
 
                 projects.add(project);
             }
@@ -65,11 +65,11 @@ public class ProjectService {
         return project;
     }
 
-    public Project getProjectById(String id, String repo, String owner) {
+    public Project getProjectById(String id, String repo, String owner, int sinceCommits, int sinceIssues, int maxPages) {
         String uri = "https://api.github.com/repos/" + owner + "/" + repo + "/projects";
 
-        if (getAllProjects(repo, owner) != null) {
-            Optional<Project> projectOpt = getAllProjects(repo, owner)
+        if (getAllProjects(repo, owner, sinceCommits, sinceIssues, maxPages) != null) {
+            Optional<Project> projectOpt = getAllProjects(repo, owner, sinceCommits, sinceIssues, maxPages)
                     .stream()
                     .filter(project -> project.getId().equals(id))
                     .findFirst();
